@@ -1,0 +1,41 @@
+version: '3'
+services:
+  mysql_master:
+    image: mysql:8.0
+    env_file:
+      - ./master/mysql_master.env
+    container_name: "mysql_master"
+    restart: "no"
+    ports:
+      - 4406:3306
+    volumes:
+      - ./master/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
+      - ./master/data:/var/lib/mysql
+
+  mysql_slave1:
+    image: mysql:8.0
+    env_file:
+      - slaveone/mysql_slave.env
+    container_name: "mysql_slave1"
+    restart: "no"
+    ports:
+      - 5506:3306
+    depends_on:
+      - mysql_master
+    volumes:
+      - ./slaveone/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
+      - ./slaveone/data:/var/lib/mysql
+
+  mysql_slave2:
+    image: mysql:8.0
+    env_file:
+      - slavetwo/mysql_slave.env
+    container_name: "mysql_slave2"
+    restart: "no"
+    ports:
+      - 6506:3306
+    depends_on:
+      - mysql_master
+    volumes:
+      - ./slavetwo/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
+      - ./slavetwo/data:/var/lib/mysql
